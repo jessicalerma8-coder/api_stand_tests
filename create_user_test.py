@@ -1,3 +1,5 @@
+import response
+
 import sender_stand_request
 import data
 
@@ -13,8 +15,8 @@ def positive_assert(first_name):
     assert user_response.json()["authToken"] != ""
 
 users_table_response = sender_stand_request.get_users_table()
-str_user = user_body["firstName"] + "," + user_body["phone"] + "," \
-           + user_body["address"] + ",,," + user_response.json()["authToken"]
+str_user = data.user_body["firstName"] + "," + data.user_body["phone"] + "," \
+           + data.user_body["address"] + ",,," + user_response.json()["authToken"]
 
 assert users_table_response.text.count(str_user) == 1
 
@@ -23,22 +25,18 @@ def negative_assert_symbol(first_name):
     response = sender_stand_request.post_new_user(user_body)
     assert response.status_code == 400
     assert response.json()["code"] == 400
-
- assert response.json()["message"] == "El nombre que ingresaste es incorrecto. " \\
+    assert response.json()["message"] == "El nombre que ingresaste es incorrecto. " \\
                                          "Los nombres solo pueden contener caracteres latinos,  "\\
                                          "los nombres deben tener al menos 2 caracteres y no más de 15 caracteres"
 def negative_assert_no_firstname(user_body):
     response = sender_stand_request.post_new_user(user_body)
-
-assert response.status_code == 400
-assert response.json()["code"] == 400
-assert response.json()["message"] == "No se enviaron todos los parámetros requeridos"
+    assert response.status_code == 400
+    assert response.json()["code"] == 400
+    assert response.json()["message"] == "No se enviaron todos los parámetros requeridos"
 
 def test_create_user_2_letter_in_first_name_get_success_response():
     user_body = get_user_body("Aa")
     user_response = sender_stand_request.post_new_user(user_body)
-
-
     assert user_response.status_code == 201
     assert user_response.json()["authToken"] != ""
 
@@ -47,21 +45,16 @@ def test_create_user_2_letter_in_first_name_get_success_response():
                + user_body["address"] + ",,," + user_response.json()["authToken"]
     assert users_table_response.text.count(str_user) == 1
 
-    def test_create_user_2_letter_in_first_name_get_success_response():
-        positive_assert("Aa")
 
-        def test_create_user_15_letter_in_first_name_get_success_response():
+def test_create_user_15_letter_in_first_name_get_success_response():
             positive_assert("Aaaaaaaaaaaaaaa")
 
 def negative_assert_symbol(first_name):
     user_body = get_user_body(first_name)
 
     response = sender_stand_request.post_new_user(user_body)
-
     assert response.status_code == 400
-
     assert response.json()["code"] == 400
-
     assert response.json()["message"] == "Has introducido un nombre de usuario no válido. " \
                                          "El nombre solo puede contener letras del alfabeto latino, "\
                                          "la longitud debe ser de 2 a 15 caracteres."
